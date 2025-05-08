@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  cadastral_pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./bronze:/app/bronze
+      - ./silver:/app/silver
+      - ./.env:/app/.env
+    environment:
+      - DATAFORDELER_USERNAME=${DATAFORDELER_USERNAME}
+      - DATAFORDELER_PASSWORD=${DATAFORDELER_PASSWORD}
+      - DATAFORDELER_URL=${DATAFORDELER_URL}
+      - ENVIRONMENT=${ENVIRONMENT:-dev}
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-}
+    command: >
+      python main.py --log-level INFO --progress --run-silver
+    networks:
+      - cadastral_network
+
+networks:
+  cadastral_network:
+    driver: bridge
